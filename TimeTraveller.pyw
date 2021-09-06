@@ -37,10 +37,13 @@ def main():
             pastaOrigem = caminho['origem']
             for diretorio, subpastas, arquivos in os.walk(pastaOrigem):
                 for arquivo in arquivos:
-                    data_arquivo = (datetime.fromtimestamp(os.path.getctime(diretorio+'/'+arquivo))).strftime('%Y%m%d')
-                    if(dataAtual == data_arquivo):
-                        shutil.copy2(os.path.join(diretorio, arquivo),pastaDestino)
-                        #data_arquivo = (datetime.fromtimestamp(os.path.getctime(diretorio+'/'+arquivo))).strftime('%d/%m/%Y %H:%M:%S')
+                    try:
+                        data_arquivo = (datetime.fromtimestamp(os.path.getctime(pastaOrigem+'/'+arquivo))).strftime('%Y%m%d')
+                        if(dataAtual == data_arquivo):
+                            shutil.copy2(os.path.join(pastaOrigem, arquivo),pastaDestino)
+                            #data_arquivo = (datetime.fromtimestamp(os.path.getctime(diretorio+'/'+arquivo))).strftime('%d/%m/%Y %H:%M:%S')
+                    except:
+                        print('Erro: '+arquivo)
 
 while True:
     main()
