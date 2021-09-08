@@ -27,6 +27,27 @@ def inicializar(data):
             caminhos = csv.DictWriter(c, fieldnames=indices, delimiter=';', lineterminator='\n')
             caminhos.writeheader()
 
+def backup(pastaOrigem):
+    for diretorio, subpastas, arquivos in os.walk(pastaOrigem):
+        for arquivo in arquivos:
+            arq = os.path.join(diretorio, arquivo)
+            if arq.endswith('.xlsb'):
+                try:
+                    shutil.copyfile(arq,pastaDestino)
+                except:
+                    continue
+            else:
+                try:
+                    data_arquivo = (datetime.fromtimestamp(os.path.getctime(arq))).strftime('%Y%m%d')
+                    if(dataAtual == data_arquivo):
+                        shutil.copy(arq,pastaDestino)
+                        #data_arquivo = (datetime.fromtimestamp(os.path.getctime(diretorio+'/'+arquivo))).strftime('%d/%m/%Y %H:%M:%S')
+                except:
+                    print('Erro: '+arquivo)
+        for subpasta in subpastas:
+            pastaOrigem = os.path.join(diretorio, subpasta)
+            backup(pastaOrigem)
+
 def main():
     log = ''
     inicializar(dataAtual)
@@ -35,16 +56,7 @@ def main():
         caminhos = csv.DictReader(c,fieldnames=indices, delimiter=';', lineterminator='\n')
         for caminho in caminhos:
             pastaOrigem = caminho['origem']
-            for diretorio, subpastas, arquivos in os.walk(pastaOrigem):
-                for arquivo in arquivos:
-                    try:
-                        data_arquivo = (datetime.fromtimestamp(os.path.getctime(diretorio+'/'+arquivo))).strftime('%Y%m%d')
-                        if(dataAtual == data_arquivo):
-                            shutil.copy2(os.path.join(diretorio, arquivo),pastaDestino)
-                            #data_arquivo = (datetime.fromtimestamp(os.path.getctime(diretorio+'/'+arquivo))).strftime('%d/%m/%Y %H:%M:%S')
-                    except:
-                        print('Erro: '+arquivo)
-                
+            backup(pastaOrigem)                
 
 while True:
     main()
