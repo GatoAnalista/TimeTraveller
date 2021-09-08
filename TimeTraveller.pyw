@@ -34,9 +34,7 @@ def backup(pastaOrigem):
             try:
                 data_arquivo = (datetime.fromtimestamp(os.path.getmtime(arq))).strftime('%Y%m%d')
                 if(dataAtual == data_arquivo):
-                    #os.system('cmd /c "xcopy /y "'+arq+'" "'+pastaDestino+'""')
                     shutil.copy(arq,pastaDestino)
-                    #data_arquivo = (datetime.fromtimestamp(os.path.getctime(diretorio+'/'+arquivo))).strftime('%d/%m/%Y %H:%M:%S')
             except:
                 print('Erro: '+arquivo)
         for subpasta in subpastas:
