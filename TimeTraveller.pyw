@@ -6,9 +6,6 @@ from datetime import date
 import shutil
 
 pastaOrigem = ''
-dataAtual = date.today()
-dataAtual = dataAtual.strftime('%Y%m%d')
-pastaDestino = './backups/'+dataAtual
 
 def inicializar(data):
     try:
@@ -27,7 +24,7 @@ def inicializar(data):
             caminhos = csv.DictWriter(c, fieldnames=indices, delimiter=';', lineterminator='\n')
             caminhos.writeheader()
 
-def backup(pastaOrigem):
+def backup(pastaOrigem,pastaDestino,dataAtual):
     for diretorio, subpastas, arquivos in os.walk(pastaOrigem):
         for arquivo in arquivos:
             arq = os.path.join(diretorio, arquivo)
@@ -39,17 +36,20 @@ def backup(pastaOrigem):
                 print('Erro: '+arquivo)
         for subpasta in subpastas:
             pastaOrigem = os.path.join(diretorio, subpasta)
-            backup(pastaOrigem)
+            backup(pastaOrigem,pastaDestino,dataAtual)
 
 def main():
     log = ''
+    dataAtual = date.today()
+    dataAtual = dataAtual.strftime('%Y%m%d')
+    pastaDestino = './backups/'+dataAtual
     inicializar(dataAtual)
     with open('caminhos.csv','r') as c:
         indices = ['origem']
         caminhos = csv.DictReader(c,fieldnames=indices, delimiter=';', lineterminator='\n')
         for caminho in caminhos:
             pastaOrigem = caminho['origem']
-            backup(pastaOrigem)                
+            backup(pastaOrigem,pastaDestino,dataAtual)                
 
 while True:
     main()
