@@ -23,8 +23,16 @@ def inicializar(data):
             indices = ['origem']
             caminhos = csv.DictWriter(c, fieldnames=indices, delimiter=';', lineterminator='\n')
             caminhos.writeheader()
+    try:
+        open('log.csv','r')
+    except:
+        with open('log.csv','w') as c:
+            indices = ['Data do arquivo','Caminho do arquivo','arquivo']
+            caminhos = csv.DictWriter(c, fieldnames=indices, delimiter=';', lineterminator='\n')
+            caminhos.writeheader()
 
 def backup(pastaOrigem,pastaDestino,dataAtual):
+    log = [[]]
     for diretorio, subpastas, arquivos in os.walk(pastaOrigem):
         for arquivo in arquivos:
             arq = os.path.join(diretorio, arquivo)
@@ -32,25 +40,43 @@ def backup(pastaOrigem,pastaDestino,dataAtual):
                 data_arquivo = (datetime.fromtimestamp(os.path.getmtime(arq))).strftime('%Y%m%d')
                 if(dataAtual == data_arquivo):
                     shutil.copy(arq,pastaDestino)
+                    log += [[str(data_arquivo)] + [str(arq)] + [str(arquivo)]]
             except:
                 print('Erro: '+arquivo)
         for subpasta in subpastas:
             pastaOrigem = os.path.join(diretorio, subpasta)
-            backup(pastaOrigem,pastaDestino,dataAtual)
+            log += backup(pastaOrigem,pastaDestino,dataAtual)
+    return log
+
+def logger(log):
+    with open('log.csv','a') as datalog:
+        logs = csv.writer(datalog, delimiter = ';', lineterminator = '\n')
+        for l in log:
+            if l != []:
+                logs.writerow(l)
+    logs = []
+    indices = ['Data do arquivo','Caminho do arquivo','arquivo']
+    with open('log.csv','r') as datalog:
+        logs = list(csv.DictReader(datalog, fieldnames=indices, delimiter = ';', lineterminator = '\n'))
+    with open('log.csv','w') as datalog:
+        l = csv.writer(datalog, delimiter = ';', lineterminator = '\n')
+        l.writerow(indices)
+        l.writerows(log)
 
 def main():
-    log = ''
     dataAtual = date.today()
     dataAtual = dataAtual.strftime('%Y%m%d')
     pastaDestino = './backups/'+dataAtual
+    log = ''
     inicializar(dataAtual)
     with open('caminhos.csv','r') as c:
         indices = ['origem']
         caminhos = csv.DictReader(c,fieldnames=indices, delimiter=';', lineterminator='\n')
         for caminho in caminhos:
             pastaOrigem = caminho['origem']
-            backup(pastaOrigem,pastaDestino,dataAtual)                
-
+            log = backup(pastaOrigem,pastaDestino,dataAtual)
+    logger(log)
+                        
 while True:
     main()
     time.sleep(5)
