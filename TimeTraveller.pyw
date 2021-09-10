@@ -54,14 +54,19 @@ def logger(log):
         for l in log:
             if l != []:
                 logs.writerow(l)
-    logs = []
-    indices = ['Data do arquivo','Caminho do arquivo','arquivo']
+    limpaLog()
+
+def limpaLog():
+    linhas = []
     with open('log.csv','r') as datalog:
-        logs = list(csv.DictReader(datalog, fieldnames=indices, delimiter = ';', lineterminator = '\n'))
+        for log in datalog:
+            linhas += [datalog.readline()]
+    print(linhas)
+    linhas = list(dict.fromkeys(linhas))
     with open('log.csv','w') as datalog:
-        l = csv.writer(datalog, delimiter = ';', lineterminator = '\n')
-        l.writerow(indices)
-        l.writerows(log)
+        datalog.write('Data do arquivo;Caminho do arquivo;arquivo\n')
+        for linha in linhas:
+            datalog.writelines(linha)
 
 def main():
     dataAtual = date.today()
