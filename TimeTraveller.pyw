@@ -61,7 +61,6 @@ def limpaLog():
     with open('log.csv','r') as datalog:
         for log in datalog:
             linhas += [datalog.readline()]
-    print(linhas)
     linhas = list(dict.fromkeys(linhas))
     with open('log.csv','w') as datalog:
         datalog.write('Data do arquivo;Caminho do arquivo;arquivo\n')
